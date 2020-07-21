@@ -3,6 +3,8 @@ package logpack.processor
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+import io.circe.Json
+
 import scala.annotation.tailrec
 import scala.util.Try
 
@@ -17,34 +19,22 @@ object ProcessorHelper {
   )
 
   @tailrec
-  def tryFind(field: String, binding: Map[String, Any]): Option[Any] =
+  def tryFind(field: String, json: Json): Option[Json] =
     field.split("\\.").toList match {
       case Nil      => None
-      case h :: Nil => binding.get(h)
+      case h :: Nil => json.asObject.map(_.toMap).getOrElse(Map.empty).get(h)
       case h :: t =>
         tryFind(
           t.mkString("."),
-          binding.getOrElse(h, Map.empty).asInstanceOf[Map[String, Any]]
+          json.asObject.map(_.toMap).getOrElse(Map.empty).getOrElse(h, Json.Null)
         )
     }
 
-  @tailrec
-  def find(field: String, binding: Map[String, Any], default: String = ""): String =
+  def createMap(field: String, value: Json): Json =
     field.split("\\.").toList match {
-      case Nil      => default
-      case h :: Nil => binding.get(h).map(_.toString).getOrElse("")
-      case h :: t =>
-        find(
-          t.mkString("."),
-          binding.getOrElse(h, Map.empty).asInstanceOf[Map[String, Any]]
-        )
-    }
-
-  def createMap(field: String, value: Any): Map[String, Any] =
-    field.split("\\.").toList match {
-      case Nil      => Map.empty
-      case h :: Nil => Map(h -> value)
-      case h :: t   => Map(h -> createMap(t.mkString("."), value))
+      case Nil      => Json.Null
+      case h :: Nil => Json.obj((h, value))
+      case h :: t   => Json.obj((h, createMap(t.mkString("."), value)))
     }
 
   def toDate(str: String): Option[LocalDateTime] =

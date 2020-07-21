@@ -1,5 +1,6 @@
 package logpack.processor.runners
 
+import io.circe.syntax._
 import logpack.LogRecord
 import logpack.config.LookupProcessor
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
@@ -14,9 +15,7 @@ class LookupProcessorRunner extends ProcessorRunner[LookupProcessor] {
       targetValue <- processor.lookupTable.get(source)
     } yield targetValue).getOrElse(processor.default)
 
-    record.copy(
-      attributes = record.attributes ++ ProcessorHelper
-        .createMap(processor.target, result)
-    )
+    val attrs = merge(record.attributes, ProcessorHelper.createMap(processor.target, result.asJson))
+    record.copy(attributes = attrs)
   }
 }

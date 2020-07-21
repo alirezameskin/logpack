@@ -17,7 +17,14 @@ class DateReMapperRunner extends ProcessorRunner[DateReMapper] {
         case None         => ProcessorHelper.toDate(x)
       }
 
-    firstAttribute(processor.sources, record).flatMap(toDate) match {
+    val date = firstAttribute(processor.sources, record)
+      .filter(_.isString)
+      .map(_.asString)
+      .filter(_.isDefined)
+      .flatten
+      .flatMap(toDate)
+
+    date match {
       case Some(v) => record.copy(time = Some(Timestamp.valueOf(v).getTime))
       case _       => record
     }

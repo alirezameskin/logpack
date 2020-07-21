@@ -1,5 +1,6 @@
 package logpack.processor.runners
 
+import io.circe.syntax._
 import logpack.LogRecord
 import logpack.config.Arithmetic
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
@@ -14,10 +15,8 @@ class ArithmeticRunner extends ProcessorRunner[Arithmetic] {
     ) match {
       case Left(_) => record
       case Right(value) =>
-        record.copy(
-          attributes = record.attributes ++ ProcessorHelper
-            .createMap(processor.target, value)
-        )
+        val attrs = merge(ProcessorHelper.createMap(processor.target, value.asJson), record.attributes)
+        record.copy(attributes = attrs)
     }
 
 }

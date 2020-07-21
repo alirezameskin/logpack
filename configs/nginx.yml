@@ -36,7 +36,7 @@ steps:
   - type: "remapper"
     sources:
       - "remote"
-    target: "user.ip"
+    target: "http.user_ip"
     preserveSource: false
     overrideOnConflict: false
 

@@ -2,6 +2,9 @@ package logpack.processor.runners
 
 import java.net.URI
 
+import io.circe.Json
+import io.circe.generic.auto._
+import io.circe.syntax._
 import logpack.config.URLParser
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import logpack.{LogRecord, UrlDetails}
@@ -11,21 +14,21 @@ import scala.util.Try
 class URLParserRunner extends ProcessorRunner[URLParser] {
 
   override def run(processor: URLParser, record: LogRecord): LogRecord = {
-    val details =
+    val details: Option[Json] =
       processor.sources
         .to(LazyList)
         .map(f => checkSource(record, f))
         .filter(_.isDefined)
         .map(_.get)
         .headOption
+        .map(details => details.asJson)
 
-    val attrs = details
-      .map { agent =>
-        ProcessorHelper.createMap(processor.target, agent)
-      }
-      .getOrElse(record.attributes)
+    val attrs = details match {
+      case Some(obj) => ProcessorHelper.createMap(processor.target, obj)
+      case None      => Json.Null
+    }
 
-    record.copy(attributes = record.attributes ++ attrs)
+    record.copy(attributes = merge(record.attributes, attrs))
   }
 
   private def checkSource(record: LogRecord, field: String): Option[UrlDetails] =

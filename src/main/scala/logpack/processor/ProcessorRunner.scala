@@ -1,22 +1,28 @@
 package logpack.processor
 
+import io.circe.Json
 import logpack.LogRecord
 import logpack.config._
 import logpack.processor.runners.implicits._
 
 trait ProcessorRunner[A <: Processor] {
+
+  def merge(attrs1: Json, attrs2: Json): Json = (attrs1, attrs2) match {
+    case (Json.Null, Json.Null) => Json.Null
+    case (Json.Null, _)         => attrs2
+    case (_, Json.Null)         => attrs1
+    case (_, _)                 => attrs1.deepMerge(attrs2)
+  }
+
   def run(processor: A, record: LogRecord): LogRecord
 
-  def firstAttribute(names: List[String], record: LogRecord): Option[String] =
+  def firstAttribute(names: List[String], record: LogRecord): Option[Json] =
     names
       .to(LazyList)
-      .map(f => ProcessorHelper.tryFind(f, record.attributes).map(_.toString))
+      .map(f => ProcessorHelper.tryFind(f, record.attributes))
       .filter(_.isDefined)
       .map(_.get)
       .headOption
-
-  def addAttribute(field: String, value: Any, attributes: Map[String, Any]): Map[String, Any] =
-    attributes ++ ProcessorHelper.createMap(field, value)
 }
 
 object ProcessorRunner {

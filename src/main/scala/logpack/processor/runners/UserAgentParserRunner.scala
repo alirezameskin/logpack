@@ -1,6 +1,9 @@
 package logpack.processor.runners
 
 import eu.bitwalker.useragentutils
+import io.circe.Json
+import io.circe.generic.auto._
+import io.circe.syntax._
 import logpack.config.UserAgentParser
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import logpack.{LogRecord, UserAgent}
@@ -18,14 +21,14 @@ class UserAgentParserRunner extends ProcessorRunner[UserAgentParser] {
         .filter(_.isDefined)
         .map(_.get)
         .headOption
+        .map(_.asJson)
 
-    val attrs = details
-      .map { agent =>
-        ProcessorHelper.createMap(processor.target, agent)
-      }
-      .getOrElse(record.attributes)
+    val attrs = details match {
+      case Some(obj) => ProcessorHelper.createMap(processor.target, obj)
+      case None      => Json.Null
+    }
 
-    record.copy(attributes = record.attributes ++ attrs)
+    record.copy(attributes = merge(record.attributes, attrs))
   }
 
   private def check(record: LogRecord, field: String): Option[UserAgent] =

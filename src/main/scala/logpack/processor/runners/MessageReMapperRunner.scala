@@ -8,8 +8,8 @@ class MessageReMapperRunner extends ProcessorRunner[MessageReMapper] {
 
   override def run(processor: MessageReMapper, record: LogRecord): LogRecord =
     firstAttribute(processor.sources, record) match {
-      case Some(v) => record.copy(message = v)
-      case _       => record
+      case Some(v) if v.isString => record.copy(message = v.asString.get)
+      case _                     => record
     }
 
 }

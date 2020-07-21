@@ -1,5 +1,6 @@
 package logpack.processor.runners
 
+import io.circe.syntax._
 import logpack.LogRecord
 import logpack.config.StringBuilderProcessor
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
@@ -13,10 +14,9 @@ class StringBuilderRunner extends ProcessorRunner[StringBuilderProcessor] {
       x => ProcessorHelper.tryFind(x, record.attributes).map(_.toString)
     ) match {
       case Right(value) =>
-        record.copy(
-          attributes = record.attributes ++ ProcessorHelper
-            .createMap(processor.target, value)
-        )
+        val attrs = merge(record.attributes, ProcessorHelper.createMap(processor.target, value.asJson))
+        record.copy(attributes = attrs)
+
       case Left(_) => record
     }
 }
