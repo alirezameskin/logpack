@@ -55,4 +55,9 @@ final case class UrlDetails(
   fragment: Option[String]
 )
 
-final case class UserAgent(deviceClass: String, os: String, browserFamily: String, version: String)
+final case class UserAgent(
+  deviceClass: Option[String],
+  os: Option[String],
+  browserFamily: Option[String],
+  version: Option[String]
+)

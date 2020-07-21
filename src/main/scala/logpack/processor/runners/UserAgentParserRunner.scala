@@ -1,19 +1,13 @@
 package logpack.processor.runners
 
+import eu.bitwalker.useragentutils
 import logpack.config.UserAgentParser
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import logpack.{LogRecord, UserAgent}
-import nl.basjes.parse.useragent.UserAgentAnalyzer
 
 import scala.util.Try
 
 class UserAgentParserRunner extends ProcessorRunner[UserAgentParser] {
-
-  val analyzer = UserAgentAnalyzer
-    .newBuilder()
-    .hideMatcherLoadStats()
-    .withCache(10000)
-    .build();
 
   override def run(processor: UserAgentParser, record: LogRecord): LogRecord = {
 
@@ -22,9 +16,8 @@ class UserAgentParserRunner extends ProcessorRunner[UserAgentParser] {
         .to(LazyList)
         .map(f => check(record, f))
         .filter(_.isDefined)
-        .take(1)
+        .map(_.get)
         .headOption
-        .flatten
 
     val attrs = details
       .map { agent =>
@@ -43,12 +36,12 @@ class UserAgentParserRunner extends ProcessorRunner[UserAgentParser] {
 
   private def parse(content: String): Option[UserAgent] =
     Try {
-      val result = analyzer.parse(content)
+      val agent = useragentutils.UserAgent.parseUserAgentString(content)
       UserAgent(
-        result.getValue("DeviceClass"),
-        result.getValue("OPERATING_SYSTEM_CLASS"),
-        result.getValue("AgentClass"),
-        result.getValue("AGENT_VERSION")
+        Option(agent.getOperatingSystem).map(_.getDeviceType).map(_.getName),
+        Option(agent.getOperatingSystem).map(_.getGroup).map(_.getName),
+        Option(agent.getBrowser).map(_.getGroup).map(_.getName),
+        Option(agent.getBrowserVersion).map(_.getVersion)
       )
     }.toOption
 }

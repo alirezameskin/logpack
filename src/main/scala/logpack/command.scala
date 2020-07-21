@@ -26,6 +26,7 @@ object ExecuteCommand {
       stdin
         .through(text.utf8Decode)
         .through(text.lines)
+        .filter(_.nonEmpty)
         .through(process(steps))
         .through(stdout)
     }

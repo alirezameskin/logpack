@@ -16,11 +16,14 @@ class URLParserRunner extends ProcessorRunner[URLParser] {
         .to(LazyList)
         .map(f => checkSource(record, f))
         .filter(_.isDefined)
-        .take(1)
+        .map(_.get)
         .headOption
-        .flatten
 
-    val attrs = ProcessorHelper.createMap(processor.target, details)
+    val attrs = details
+      .map { agent =>
+        ProcessorHelper.createMap(processor.target, agent)
+      }
+      .getOrElse(record.attributes)
 
     record.copy(attributes = record.attributes ++ attrs)
   }
