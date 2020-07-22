@@ -7,7 +7,7 @@ import logpack.processor.ProcessorRunner
 class MessageReMapperRunner extends ProcessorRunner[MessageReMapper] {
 
   override def run(processor: MessageReMapper, record: LogRecord): LogRecord =
-    firstAttribute(processor.sources, record) match {
+    findAttributes(processor.sources, record).headOption match {
       case Some(v) if v.isString => record.copy(message = v.asString.get)
       case _                     => record
     }

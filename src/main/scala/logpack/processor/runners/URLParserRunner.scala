@@ -34,7 +34,8 @@ class URLParserRunner extends ProcessorRunner[URLParser] {
   private def checkSource(record: LogRecord, field: String): Option[UrlDetails] =
     ProcessorHelper
       .tryFind(field, record.attributes)
-      .map(_.toString)
+      .filter(_.isString)
+      .flatMap(_.asString)
       .flatMap(parseUrl)
 
   private def parseUrl(url: String): Option[UrlDetails] =

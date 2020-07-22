@@ -6,7 +6,7 @@ import logpack.processor.{ProcessorHelper, ProcessorRunner}
 
 class ReMapperRunner extends ProcessorRunner[ReMapper] {
   override def run(processor: ReMapper, record: LogRecord): LogRecord =
-    firstAttribute(processor.sources, record) match {
+    findAttributes(processor.sources, record).headOption match {
       case Some(value) =>
         val attrs = merge(record.attributes, ProcessorHelper.createMap(processor.target, value))
         record.copy(attributes = attrs)

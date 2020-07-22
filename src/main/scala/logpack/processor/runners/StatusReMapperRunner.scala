@@ -1,22 +1,18 @@
 package logpack.processor.runners
 
+import logpack._
 import logpack.config.StatusReMapper
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
-import logpack._
 
 class StatusReMapperRunner extends ProcessorRunner[StatusReMapper] {
 
   val SyslogLevels = List("0", "1", "2", "3", "4", "5", "6", "7")
 
   override def run(processor: StatusReMapper, record: LogRecord): LogRecord = {
-    val level =
-      processor.sources
-        .to(LazyList)
-        .map(f => checkField(record, f))
-        .filter(_.isDefined)
-        .take(1)
-        .headOption
-        .flatten
+    val level = processor.sources
+      .to(LazyList)
+      .flatMap(f => checkField(record, f))
+      .headOption
 
     record.copy(level = level)
   }
@@ -24,7 +20,8 @@ class StatusReMapperRunner extends ProcessorRunner[StatusReMapper] {
   private def checkField(record: LogRecord, field: String): Option[Level] =
     ProcessorHelper
       .tryFind(field, record.attributes)
-      .map(_.toString.toLowerCase)
+      .flatMap(j => j.asNumber.map(_.toString).orElse(j.asString))
+      .map(_.toLowerCase)
       .flatMap {
         case x if SyslogLevels.contains(x)                   => mapToLevel(x.toInt)
         case x if x.startsWith("emerg") || x.startsWith("f") => Some(Emergency)

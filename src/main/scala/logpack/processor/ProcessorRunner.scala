@@ -16,13 +16,10 @@ trait ProcessorRunner[A <: Processor] {
 
   def run(processor: A, record: LogRecord): LogRecord
 
-  def firstAttribute(names: List[String], record: LogRecord): Option[Json] =
+  def findAttributes(names: List[String], record: LogRecord): LazyList[Json] =
     names
       .to(LazyList)
-      .map(f => ProcessorHelper.tryFind(f, record.attributes))
-      .filter(_.isDefined)
-      .map(_.get)
-      .headOption
+      .flatMap(f => ProcessorHelper.tryFind(f, record.attributes))
 }
 
 object ProcessorRunner {
