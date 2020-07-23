@@ -38,7 +38,6 @@ steps:
       - "remote"
     target: "http.user_ip"
     preserveSource: false
-    overrideOnConflict: false
 
   - type: "url-parser"
     sources:
