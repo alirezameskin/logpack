@@ -52,16 +52,3 @@ steps:
   - type: "arithmetic-processor"
     expression: "Expression"
     target: "target-attribute"
-
-  - type: "geo-ip-parser"
-    sources:
-      - "remote"
-    target: "http.client.geoip"
-
-  - type: "lookup-processor"
-    source: "source"
-    target: "target"
-    lookupTable:
-      key1: "Value1"
-      key2: "Value2"
-    default: "Value2"

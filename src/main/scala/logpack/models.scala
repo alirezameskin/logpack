@@ -1,9 +1,9 @@
 package logpack
 
 import cats.Show
-import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.circe.{Encoder, Json}
 
 sealed trait Level
 case object Emergency extends Level
@@ -22,6 +22,12 @@ final case class LogRecord(
   attributes: Json = Json.Null
 )
 
+object Level {
+  implicit val jsonEncoder = new Encoder[Level] {
+    override def apply(a: Level): Json = a.toString.asJson
+  }
+}
+
 object LogRecord {
   val ONE_LINE_PRINT: Show[LogRecord] = (rec: LogRecord) => rec.asJson.noSpaces + "\n"
   val PRETTY_PRINT: Show[LogRecord]   = (rec: LogRecord) => rec.asJson.spaces2 + "\n"
@@ -32,6 +38,7 @@ final case class UrlDetails(
   host: Option[String],
   port: Option[Int],
   path: Option[String],
+  query: Option[String],
   fragment: Option[String]
 )
 

@@ -5,7 +5,7 @@ import io.circe.syntax._
 import logpack._
 import logpack.config.{Arithmetic, GrokParser}
 
-class GrokParserRunnerTest extends org.scalatest.FunSuite {
+class GrokParserRunnerTest extends org.scalatest.funsuite.AnyFunSuite {
 
   test("Test Grok") {
 

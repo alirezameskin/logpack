@@ -42,17 +42,70 @@ steps:
   - type: "remapper"
     sources:
       - "remote"
-    target: "user.ip"
+    target: "http.user_ip"
     preserveSource: false
-    overrideOnConflict: false
+
+  - type: "url-parser"
+    sources:
+      - "path"
+    target: "url.details"
 
   - type: "user-agent-parser"
     sources:
       - "agent"
     target: "http.useragent"
+
+  - type: "arithmetic-processor"
+    expression: "Expression"
+    target: "target-attribute"
 ```
 
  
 ```bash
-cat /var/log/nginx/access.log | logpack -c nginx.yaml
+echo '176.9.9.94 - - [18/Jul/2020:06:25:03 +0000] "GET /contact/form?lang=en HTTP/1.1" 200 12221 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"' > /tmp/nginx.log
+
+cat /tmp/nginx.log | java -jar target/scala-2.13/logpack-assembly-0.1.0-SNAPSHOT.jar -p nginx.yaml
+```
+
+The output would be a json
+```json
+{
+  "message" : "Request GET - /contact/form?lang=en",
+  "level" : "Info",
+  "time" : 1595046303000,
+  "attributes" : {
+    "response" : "Value2",
+    "http" : {
+      "useragent" : {
+        "deviceClass" : "Computer",
+        "os" : "Mac OS X",
+        "browserFamily" : "Firefox",
+        "version" : "78.0"
+      },
+      "user_ip" : "176.9.9.94",
+      "status_category" : "OK"
+    },
+    "url" : {
+      "details" : {
+        "scheme" : null,
+        "host" : null,
+        "port" : null,
+        "path" : "/contact/form",
+        "query" : "lang=en",
+        "fragment" : null
+      }
+    },
+    "message" : "Request GET - /contact/form?lang=en",
+    "method" : "GET",
+    "host" : "-",
+    "agent" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
+    "version" : " HTTP/1.1",
+    "status" : "200",
+    "user" : "-",
+    "path" : "/contact/form?lang=en",
+    "size" : "12221",
+    "referer" : "-",
+    "time" : "18/Jul/2020:06:25:03 +0000"
+  }
+} 
 ```

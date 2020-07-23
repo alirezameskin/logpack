@@ -9,7 +9,7 @@ import io.circe.syntax._
 import logpack.config.DateReMapper
 import logpack.{Info, LogRecord}
 
-class DateReMapperTest extends org.scalatest.FunSuite {
+class DateReMapperTest extends org.scalatest.funsuite.AnyFunSuite {
   def now = new Timestamp(System.currentTimeMillis()).getTime
 
   test("Should parse ISO date format") {

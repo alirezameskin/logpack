@@ -46,6 +46,7 @@ class URLParserRunner extends ProcessorRunner[URLParser] {
         host = Option(uri.getHost),
         port = Option(uri.getPort).filter(_ != -1),
         path = Option(uri.getPath),
+        query = Option(uri.getQuery),
         fragment = Option(uri.getFragment)
       )
     }.toOption

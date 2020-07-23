@@ -28,3 +28,5 @@ libraryDependencies ++= Seq(
 )
 
 resolvers += "sparser".at("https://dl.bintray.com/meskin/sparser/")
+
+scalacOptions ++= Seq("-deprecation", "-feature")

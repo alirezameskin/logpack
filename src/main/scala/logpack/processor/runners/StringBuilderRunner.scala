@@ -12,7 +12,7 @@ class StringBuilderRunner extends ProcessorRunner[StringBuilderProcessor] {
   override def run(processor: StringBuilderProcessor, record: LogRecord): LogRecord = {
     val result = template.evaluate(
       processor.template,
-      x => ProcessorHelper.tryFind(x, record.attributes).map(_.toString)
+      x => ProcessorHelper.tryFind(x, record.attributes).flatMap(_.asString)
     )
 
     result match {

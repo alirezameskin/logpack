@@ -7,7 +7,7 @@ import io.circe.syntax._
 import logpack._
 import logpack.config.StatusReMapper
 
-class StatusReMapperTest extends org.scalatest.FunSuite {
+class StatusReMapperTest extends org.scalatest.funsuite.AnyFunSuite {
 
   def now = new Timestamp(System.currentTimeMillis()).getTime
 

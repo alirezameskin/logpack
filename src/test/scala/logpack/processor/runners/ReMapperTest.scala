@@ -5,7 +5,7 @@ import io.circe.syntax._
 import logpack._
 import logpack.config.ReMapper
 
-class ReMapperTest extends org.scalatest.FunSuite {
+class ReMapperTest extends org.scalatest.funsuite.AnyFunSuite {
 
   test("Remap an existing field without removing it") {
 

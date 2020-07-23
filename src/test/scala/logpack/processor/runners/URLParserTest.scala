@@ -7,7 +7,7 @@ import io.circe.syntax._
 import logpack.config.URLParser
 import logpack.{Info, LogRecord}
 
-class URLParserTest extends org.scalatest.FunSuite {
+class URLParserTest extends org.scalatest.funsuite.AnyFunSuite {
   def now = new Timestamp(System.currentTimeMillis()).getTime
 
   test("Should parse a valid URL and convert it to UrlDetails") {
@@ -36,6 +36,7 @@ class URLParserTest extends org.scalatest.FunSuite {
             "host"     -> "github.com".asJson,
             "port"     -> Json.Null,
             "path"     -> "/typelevel/cats-effect".asJson,
+            "query"    -> Json.Null,
             "fragment" -> Json.Null
           )
         )

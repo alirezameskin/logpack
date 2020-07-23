@@ -5,7 +5,7 @@ import io.circe.syntax._
 import logpack._
 import logpack.config.Arithmetic
 
-class ArithmeticRunnerTest extends org.scalatest.FunSuite {
+class ArithmeticRunnerTest extends org.scalatest.funsuite.AnyFunSuite {
 
   test("Run arithmetic") {
 
