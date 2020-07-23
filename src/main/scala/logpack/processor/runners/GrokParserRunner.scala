@@ -6,14 +6,14 @@ import io.circe.syntax._
 import logpack.LogRecord
 import logpack.config.GrokParser
 import logpack.processor.ProcessorRunner
+import logpack.processor.ProcessorHelper.merge
 
 class GrokParserRunner extends ProcessorRunner[GrokParser] {
+
   override def run(processor: GrokParser, record: LogRecord): LogRecord = {
     val attrs = processor.matchRules
       .to(LazyList)
-      .map(parse(_, record.message))
-      .filter(_.isDefined)
-      .map(_.get)
+      .flatMap(parse(_, record.message))
       .headOption
       .getOrElse(Map.empty)
       .asJson
@@ -23,11 +23,13 @@ class GrokParserRunner extends ProcessorRunner[GrokParser] {
 
   def parse(pattern: String, str: String): Option[Map[String, String]] = {
     val matcher = Pattern.compile(pattern).matcher(str)
+
     if (matcher.matches()) {
       val attributes = getAttributes(pattern)
       val values     = attributes.map(matcher.group)
       Some(attributes.zip(values).toMap)
     } else None
+
   }
 
   def getAttributes(rule: String): Seq[String] =

@@ -5,6 +5,7 @@ import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
 import logpack.config.UserAgentParser
+import logpack.processor.ProcessorHelper.merge
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import logpack.{LogRecord, UserAgent}
 
@@ -17,14 +18,12 @@ class UserAgentParserRunner extends ProcessorRunner[UserAgentParser] {
     val details =
       processor.sources
         .to(LazyList)
-        .map(f => check(record, f))
-        .filter(_.isDefined)
-        .map(_.get)
+        .flatMap(f => check(record, f))
         .headOption
         .map(_.asJson)
 
     val attrs = details match {
-      case Some(obj) => ProcessorHelper.createMap(processor.target, obj)
+      case Some(obj) => ProcessorHelper.createJson(processor.target, obj)
       case None      => Json.Null
     }
 

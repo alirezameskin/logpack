@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 
 import logpack.LogRecord
 import logpack.config.DateReMapper
+import logpack.processor.ProcessorHelper.tryFind
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 
 class DateReMapperRunner extends ProcessorRunner[DateReMapper] {
@@ -18,11 +19,14 @@ class DateReMapperRunner extends ProcessorRunner[DateReMapper] {
       }
     }
 
-    val date = findAttributes(processor.sources, record)
-      .filter(_.isString)
-      .map(_.asString.get)
-      .flatMap(toDate)
-      .headOption
+    val date =
+      processor.sources
+        .to(LazyList)
+        .flatMap(f => tryFind(f, record.attributes))
+        .filter(_.isString)
+        .flatMap(_.asString)
+        .flatMap(toDate)
+        .headOption
 
     date match {
       case Some(v) => record.copy(time = Some(Timestamp.valueOf(v).getTime))

@@ -18,6 +18,13 @@ object ProcessorHelper {
     DateTimeFormatter.ISO_LOCAL_DATE_TIME
   )
 
+  def merge(attrs1: Json, attrs2: Json): Json = (attrs1, attrs2) match {
+    case (Json.Null, Json.Null) => Json.Null
+    case (Json.Null, _)         => attrs2
+    case (_, Json.Null)         => attrs1
+    case (_, _)                 => attrs1.deepMerge(attrs2)
+  }
+
   @tailrec
   def tryFind(field: String, json: Json): Option[Json] =
     field.split("\\.").toList match {
@@ -30,11 +37,11 @@ object ProcessorHelper {
         )
     }
 
-  def createMap(field: String, value: Json): Json =
+  def createJson(field: String, value: Json): Json =
     field.split("\\.").toList match {
       case Nil      => Json.Null
       case h :: Nil => Json.obj((h, value))
-      case h :: t   => Json.obj((h, createMap(t.mkString("."), value)))
+      case h :: t   => Json.obj((h, createJson(t.mkString("."), value)))
     }
 
   def toDate(str: String): Option[LocalDateTime] =

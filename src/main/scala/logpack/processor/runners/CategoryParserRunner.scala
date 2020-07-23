@@ -3,6 +3,7 @@ package logpack.processor.runners
 import io.circe.syntax._
 import logpack.LogRecord
 import logpack.config.CategoryParser
+import logpack.processor.ProcessorHelper.{createJson, merge}
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import sparser.conditional
 
@@ -26,7 +27,7 @@ class CategoryParserRunner extends ProcessorRunner[CategoryParser] {
 
     result match {
       case Some(value) =>
-        val attrs = merge(ProcessorHelper.createMap(processor.target, value.asJson), record.attributes)
+        val attrs = merge(createJson(processor.target, value.asJson), record.attributes)
         record.copy(attributes = attrs)
 
       case None => record

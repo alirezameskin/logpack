@@ -6,6 +6,7 @@ import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
 import logpack.config.URLParser
+import logpack.processor.ProcessorHelper.merge
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import logpack.{LogRecord, UrlDetails}
 
@@ -17,14 +18,12 @@ class URLParserRunner extends ProcessorRunner[URLParser] {
     val details: Option[Json] =
       processor.sources
         .to(LazyList)
-        .map(f => checkSource(record, f))
-        .filter(_.isDefined)
-        .map(_.get)
+        .flatMap(f => checkSource(record, f))
         .headOption
         .map(details => details.asJson)
 
     val attrs = details match {
-      case Some(obj) => ProcessorHelper.createMap(processor.target, obj)
+      case Some(obj) => ProcessorHelper.createJson(processor.target, obj)
       case None      => Json.Null
     }
 

@@ -25,7 +25,7 @@ class DateReMapperTest extends org.scalatest.FunSuite {
     val runner = new DateReMapperRunner
     val result = runner.run(processor, record)
 
-    assert(result.time == Some(Timestamp.valueOf(time).getTime))
+    assert(result.time.contains(Timestamp.valueOf(time).getTime))
   }
 
   test("Between multiple fields it should select the first possible value") {
@@ -44,7 +44,7 @@ class DateReMapperTest extends org.scalatest.FunSuite {
     val runner = new DateReMapperRunner
     val result = runner.run(processor, record)
 
-    assert(result.time == Some(Timestamp.valueOf(time1).getTime))
+    assert(result.time.contains(Timestamp.valueOf(time1).getTime))
   }
 
   test("Should be able to select in nested Map") {
@@ -64,6 +64,6 @@ class DateReMapperTest extends org.scalatest.FunSuite {
     val runner = new DateReMapperRunner
     val result = runner.run(processor, record)
 
-    assert(result.time == Some(Timestamp.valueOf(time1).getTime))
+    assert(result.time.contains(Timestamp.valueOf(time1).getTime))
   }
 }
