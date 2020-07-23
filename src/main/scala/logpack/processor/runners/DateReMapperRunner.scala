@@ -19,14 +19,13 @@ class DateReMapperRunner extends ProcessorRunner[DateReMapper] {
       }
     }
 
-    val date =
-      processor.sources
-        .to(LazyList)
-        .flatMap(f => tryFind(f, record.attributes))
-        .filter(_.isString)
-        .flatMap(_.asString)
-        .flatMap(toDate)
-        .headOption
+    val date = processor.sources
+      .to(LazyList)
+      .flatMap(f => tryFind(f, record.attributes))
+      .filter(_.isString)
+      .flatMap(_.asString)
+      .flatMap(toDate)
+      .headOption
 
     date match {
       case Some(v) => record.copy(time = Some(Timestamp.valueOf(v).getTime))

@@ -3,7 +3,7 @@ package logpack.processor.runners
 import io.circe.syntax._
 import logpack.LogRecord
 import logpack.config.CategoryParser
-import logpack.processor.ProcessorHelper.{createJson, merge}
+import logpack.processor.ProcessorHelper.{createJson, merge, tryFind}
 import logpack.processor.{ProcessorHelper, ProcessorRunner}
 import sparser.conditional
 
@@ -13,7 +13,7 @@ class CategoryParserRunner extends ProcessorRunner[CategoryParser] {
 
   override def run(processor: CategoryParser, record: LogRecord): LogRecord = {
     val resolver: String => Option[Double] = x =>
-      ProcessorHelper.tryFind(x, record.attributes).flatMap {
+      tryFind(x, record.attributes).flatMap {
         case n if n.isNumber => Some(n.asNumber.get.toDouble)
         case n if n.isString => Try(n.asString.map(_.toDouble)).toOption.flatten
         case _               => None
