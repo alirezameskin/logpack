@@ -14,7 +14,7 @@ val CirceYamlVersion      = "0.12.0"
 libraryDependencies += scalaTest                  % Test
 libraryDependencies += "co.fs2"                   %% "fs2-core" % "2.2.1"
 libraryDependencies += "co.fs2"                   %% "fs2-io" % "2.2.1"
-libraryDependencies += "com.github.alirezameskin" %% "sparser" % "0.0.5"
+libraryDependencies += "com.github.alirezameskin" %% "sparser" % "0.0.6"
 libraryDependencies += "com.monovore"             %% "decline-effect" % "1.0.0"
 libraryDependencies += "eu.bitwalker"             % "UserAgentUtils" % "1.21"
 
