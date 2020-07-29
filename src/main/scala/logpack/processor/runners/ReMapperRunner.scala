@@ -1,9 +1,8 @@
 package logpack.processor.runners
 
-import io.circe.Json
 import logpack.LogRecord
 import logpack.config.ReMapper
-import logpack.processor.ProcessorHelper.{createJson, merge, tryFind}
+import logpack.processor.ProcessorHelper.{createJson, deleteField, merge, tryFind}
 import logpack.processor.ProcessorRunner
 
 class ReMapperRunner extends ProcessorRunner[ReMapper] {
@@ -21,7 +20,7 @@ class ReMapperRunner extends ProcessorRunner[ReMapper] {
 
       case Some((field, value)) if !processor.preserveSource =>
         val attrsWithSource = merge(record.attributes, createJson(processor.target, value))
-        val attrs           = merge(attrsWithSource, createJson(field, Json.Null)).dropNullValues
+        val attrs           = deleteField(attrsWithSource, field)
         record.copy(attributes = attrs)
 
       case None => record

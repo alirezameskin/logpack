@@ -23,6 +23,7 @@ steps:
     target: "http.status_category"
 
   - type: "date-remapper"
+    preserveSource: false
     format: 'dd/MMM/yyyy:HH:mm:ss Z'
     sources:
       - "time"
@@ -32,10 +33,11 @@ steps:
       - "http.status_category"
 
   - type: "string-builder-processor"
-    template: "Request {{method}} - {{path}}"
+    template: "{{method}} {{path}}"
     target: "message"
 
   - type: "message-remapper"
+    preserveSource: false
     sources:
       - "message"
 
@@ -64,17 +66,16 @@ steps:
 ```bash
 echo '176.9.9.94 - - [18/Jul/2020:06:25:03 +0000] "GET /contact/form?lang=en HTTP/1.1" 200 12221 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"' > /tmp/nginx.log
 
-cat /tmp/nginx.log | java -jar target/scala-2.13/logpack-assembly-0.1.0-SNAPSHOT.jar -p nginx.yaml
+cat /tmp/nginx.log | java -jar target/scala-2.13/logpack-assembly-0.1.0-SNAPSHOT.jar -p examples/nginx.yaml
 ```
 
 The output would be a json
 ```json
 {
-  "message" : "Request GET - /contact/form?lang=en",
+  "message" : "GET /contact/form?lang=en",
   "level" : "Info",
   "time" : 1595046303000,
   "attributes" : {
-    "response" : "Value2",
     "http" : {
       "useragent" : {
         "deviceClass" : "Computer",
@@ -95,7 +96,6 @@ The output would be a json
         "fragment" : null
       }
     },
-    "message" : "Request GET - /contact/form?lang=en",
     "method" : "GET",
     "host" : "-",
     "agent" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0",
@@ -104,8 +104,7 @@ The output would be a json
     "user" : "-",
     "path" : "/contact/form?lang=en",
     "size" : "12221",
-    "referer" : "-",
-    "time" : "18/Jul/2020:06:25:03 +0000"
+    "referer" : "-"
   }
 } 
 ```

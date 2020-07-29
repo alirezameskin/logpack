@@ -25,6 +25,9 @@ object ProcessorHelper {
     case (_, _)                 => attrs1.deepMerge(attrs2)
   }
 
+  def deleteField(attrs: Json, field: String): Json =
+    merge(attrs, createJson(field, Json.Null)).dropNullValues
+
   @tailrec
   def tryFind(field: String, json: Json): Option[Json] =
     field.split("\\.").toList match {

@@ -1,0 +1,15 @@
+steps:
+  - type: "grok-parser"
+    matchRules:
+      - '^(?<timestamp>[^ ]*) (?<thread>[\d]+) \[(?<level>[^ ]*)\] (?<message>.*)'
+
+  - type: "date-remapper"
+    format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+    preserveSource: false
+    sources:
+      - "timestamp"
+
+  - type: "message-remapper"
+    preserveSource: false
+    sources:
+      - "message"

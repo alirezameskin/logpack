@@ -17,6 +17,7 @@ steps:
     target: "http.status_category"
 
   - type: "date-remapper"
+    preserveSource: false
     format: 'dd/MMM/yyyy:HH:mm:ss Z'
     sources:
       - "time"
@@ -30,6 +31,7 @@ steps:
     target: "message"
 
   - type: "message-remapper"
+    preserveSource: false
     sources:
       - "message"
 
